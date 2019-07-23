@@ -3,7 +3,6 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
 	// This loads the postgres drivers.
 	_ "github.com/lib/pq"
@@ -29,15 +28,8 @@ func New(host, port, user, password, dbName string) (storage.Service, error) {
 		return nil, err
 	}
 
-	// to store timestamp
-	strQuery := "ALTER DATABASE "+ dbName+" SET DateStyle=dmy, iso;"
-	_, err = db.Exec(strQuery)
-	if err != nil {
-		return nil, err
-	}
-
 	// Create table if not exists
-	strQuery = "CREATE TABLE IF NOT EXISTS shortener (uid serial NOT NULL, url VARCHAR not NULL, " +
+	strQuery := "CREATE TABLE IF NOT EXISTS shortener (uid serial NOT NULL, url VARCHAR not NULL, " +
 		"visited boolean DEFAULT FALSE, count INTEGER DEFAULT 0, datetime timestamp without time zone);"
 
 	_, err = db.Exec(strQuery)
@@ -52,7 +44,7 @@ type postgres struct{ db *sql.DB }
 func (p *postgres) Save(url string) (string, error) {
 	var id int64
 	
-	err := p.db.QueryRow("INSERT INTO shortener(url,visited,count,datetime) VALUES($1,$2,$3,$4) returning uid;", url, false, 0, time.Now().Format(time.RFC3339)).Scan(&id)
+	err := p.db.QueryRow("INSERT INTO shortener(url,visited,count,datetime) VALUES($1,$2,$3,now()) returning uid;", url, false, 0).Scan(&id)
 	if err != nil {
 		return "", err
 	}
