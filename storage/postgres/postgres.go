@@ -94,8 +94,6 @@ func (p *postgres) DeleteOldData() {
 	_, err := p.db.Exec(strQuery)
 	if err != nil {
 		fmt.Println(err)
-	} else {
-		fmt.Println("success")
 	}
 }
 

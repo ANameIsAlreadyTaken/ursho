@@ -53,8 +53,7 @@ func main() {
 	go func() {
 		// Task removing old data
 		for {
-			time.Sleep(100 * time.Millisecond)
-			// fmt.Println("Hello, 世界")
+			time.Sleep(1 * time.Hour)
 			svc.DeleteOldData()
 		}
 	}()
