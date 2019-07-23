@@ -50,18 +50,18 @@ You can install it using 'go get' or cloning the repository.
 #### Use go get
 ```
 # fetches the program
-go get github.com/douglasmakey/ursho
+go get github.com/ANameIsAlreadyTaken/ursho
 
 # move to the app's directory
-cd $GOPATH/src/github.com/douglasmakey/ursho
+cd $GOPATH/src/github.com/ANameIsAlreadyTaken/ursho
 ```
 #### Cloning the repo
 We'll use github.com/user as our base path. Create a directory inside your workspace in which to keep source code:
 
-***mkdir -p $GOPATH/src/github.com/douglasmakey cd "$_"***
+***mkdir -p $GOPATH/src/github.com/ANameIsAlreadyTaken cd "$_"***
 
 Clone repository or download and unrar in folder\
-```git clone https://github.com/douglasmakey/ursho.git```
+```git clone https://github.com/ANameIsAlreadyTaken/ursho.git```
 
 
 Use GLIDE Package Management for Golang, for installation all packages 

@@ -9,10 +9,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
-	"github.com/douglasmakey/ursho/config"
-	"github.com/douglasmakey/ursho/handler"
-	"github.com/douglasmakey/ursho/storage/postgres"
+	"github.com/ANameIsAlreadyTaken/ursho/config"
+	"github.com/ANameIsAlreadyTaken/ursho/handler"
+	"github.com/ANameIsAlreadyTaken/ursho/storage/postgres"
 )
 
 func main() {
@@ -49,6 +50,15 @@ func main() {
 		}
 	}()
 
+	go func() {
+		// Task removing old data
+		for {
+			time.Sleep(100 * time.Millisecond)
+			// fmt.Println("Hello, 世界")
+			svc.DeleteOldData()
+		}
+	}()
+
 	// Check for a closing signal
 	// Graceful shutdown
 	sigquit := make(chan os.Signal, 1)
@@ -64,3 +74,4 @@ func main() {
 		log.Println("Server stopped")
 	}
 }
+

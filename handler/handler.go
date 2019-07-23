@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/douglasmakey/ursho/storage"
+	"github.com/ANameIsAlreadyTaken/ursho/storage"
 )
 
 // New returns an http handler for the url shortener.

@@ -3,12 +3,13 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	// This loads the postgres drivers.
 	_ "github.com/lib/pq"
 
-	"github.com/douglasmakey/ursho/base62"
-	"github.com/douglasmakey/ursho/storage"
+	"github.com/ANameIsAlreadyTaken/ursho/base62"
+	"github.com/ANameIsAlreadyTaken/ursho/storage"
 )
 
 // New returns a postgres backed storage service.
@@ -28,9 +29,16 @@ func New(host, port, user, password, dbName string) (storage.Service, error) {
 		return nil, err
 	}
 
+	// to store timestamp
+	strQuery := "ALTER DATABASE "+ dbName+" SET DateStyle=dmy, iso;"
+	_, err = db.Exec(strQuery)
+	if err != nil {
+		return nil, err
+	}
+
 	// Create table if not exists
-	strQuery := "CREATE TABLE IF NOT EXISTS shortener (uid serial NOT NULL, url VARCHAR not NULL, " +
-		"visited boolean DEFAULT FALSE, count INTEGER DEFAULT 0);"
+	strQuery = "CREATE TABLE IF NOT EXISTS shortener (uid serial NOT NULL, url VARCHAR not NULL, " +
+		"visited boolean DEFAULT FALSE, count INTEGER DEFAULT 0, datetime timestamp without time zone);"
 
 	_, err = db.Exec(strQuery)
 	if err != nil {
@@ -43,7 +51,8 @@ type postgres struct{ db *sql.DB }
 
 func (p *postgres) Save(url string) (string, error) {
 	var id int64
-	err := p.db.QueryRow("INSERT INTO shortener(url,visited,count) VALUES($1,$2,$3) returning uid;", url, false, 0).Scan(&id)
+	
+	err := p.db.QueryRow("INSERT INTO shortener(url,visited,count,datetime) VALUES($1,$2,$3,$4) returning uid;", url, false, 0, time.Now().Format(time.RFC3339)).Scan(&id)
 	if err != nil {
 		return "", err
 	}
@@ -78,6 +87,16 @@ func (p *postgres) LoadInfo(code string) (*storage.Item, error) {
 	}
 
 	return &item, nil
+}
+
+func (p *postgres) DeleteOldData() {
+	strQuery := "delete from shortener where datetime < now() - interval '7 days'"
+	_, err := p.db.Exec(strQuery)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("success")
+	}
 }
 
 func (p *postgres) Close() error { return p.db.Close() }
